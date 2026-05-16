@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة ExcelAttar - اختبار إكسيل الاحترافي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #107c41;
+            --primary-dark: #0b592e;
+            --secondary-color: #f3f2f1;
+            --text-color: #323130;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+            color: var(--white);
+            text-align: center;
+            padding: 30px 20px;
+            box-shadow: var(--shadow);
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            margin-bottom: 30px;
+        }
+
+        header h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 5px; }
+        header h1 span { color: #a3ecc0; }
+        header p { font-size: 1.1rem; opacity: 0.9; }
+
+        .container { max-width: 850px; margin: 0 auto; padding: 0 20px; }
+
+        /* شاشة الدخول */
+        .login-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-top: 5px;
+        }
+        .login-card h3 { margin-bottom: 20px; font-size: 1.5rem; color: var(--primary-dark); }
+        .login-card input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #edebe9;
+            border-radius: 10px;
+            outline: none;
+            text-align: center;
+            transition: var(--transition);
+            margin-bottom: 15px;
+        }
+        .login-card input:focus { border-color: var(--primary-color); box-shadow: 0 0 10px rgba(16,124,65,0.2); }
+        
+        /* العداد الثابت */
+        .timer-banner {
+            display: none;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            background: #fff;
+            border: 2px solid #e1dfdd;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .timer-text { font-weight: 700; color: #a80000; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+        .user-tag { font-weight: 600; color: var(--primary-color); }
+
+        /* منطقة الاختبار */
+        #quiz-area { display: none; }
+
+        .question-card {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            border-right: 6px solid var(--primary-color);
+        }
+        .question-number { font-size: 0.9rem; color: var(--primary-color); font-weight: 700; margin-bottom: 8px; display: inline-block; }
+        .question-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 18px; }
+        
+        .options-container { display: flex; flex-direction: column; gap: 12px; }
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            background-color: #faf9f8;
+            border: 2px solid #edebe9;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .option-label:hover { background-color: #f3f2f1; }
+        .option-label input { margin-left: 15px; width: 18px; height: 18px; accent-color: var(--primary-color); }
+        .option-label.selected { background-color: #e1dfdd; border-color: var(--primary-color); font-weight: 600; }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 124, 65, 0.2);
+            transition: var(--transition);
+        }
+        .btn:hover { background-color: var(--primary-dark); }
+        .start-btn { width: 100%; max-width: 400px; }
+        .submit-btn { width: 100%; margin-top: 20px; padding: 18px; }
+
+        /* النتيجة */
+        .result-card {
+            display: none;
+            background: var(--white);
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .result-score { font-size: 3.5rem; font-weight: 900; margin: 15px 0; }
+        
+        .error-msg {
+            color: #a80000; background-color: #fde7e9; padding: 12px;
+            border-radius: 8px; margin-bottom: 15px; display: none; text-align: center; font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><span>Excel</span>Attar</h1>
+        <p>الاختبار الاحترافي الشامل لمهارات ميكروسوفت إكسيل</p>
+    </header>
+
+    <div class="container">
+        
+        <div id="login-area" class="login-card">
+            <h3>مرحباً بك في اختبار ExcelAttar، يرجى إدخال اسمك الثنائي لبدء التحدي:</h3>
+            <div id="login-error" class="error-msg"></div>
+            <input type="text" id="username-input" placeholder="اكتب اسمك الثنائي هنا باللغة العربية أو الإنجليزية" autocomplete="off">
+            <br>
+            <button class="btn start-btn" onclick="startQuiz()">ابدأ الاختبار الآن (10 دقائق)</button>
+        </div>
+
+        <div id="timer-banner" class="timer-banner">
+            <div class="user-tag">المختبر الحالي: <span id="current-user-display"></span></div>
+            <div class="timer-text">⏱️ الوقت المتبقي: <span id="time-left">10:00</span></div>
+        </div>
+
+        <div id="form-error" class="error-msg">الرجاء الإجابة على جميع الأسئلة قبل تقديم الاختبار!</div>
+
+        <div id="quiz-area">
+            <form id="quiz-form">
+                <div id="quiz-container"></div>
+                <button type="button" class="btn submit-btn" onclick="calculateResult(false)">إنهاء الاختبار وعرض النتيجة</button>
+            </form>
+        </div>
+
+        <div id="result-zone" class="result-card">
+            <h2>شكرًا لك، انتهى الاختبار!</h2>
+            <h4 style="margin-top:10px; color:#605e5c;">الممتحن: <span id="final-name-display"></span></h4>
+            <div id="score-display" class="result-score">0 / 100</div>
+            <p id="feedback-message" style="font-size: 1.3rem; font-weight: 600; margin-bottom: 25px;"></p>
+            <button class="btn" style="background:#323130;" onclick="location.reload()">إجراء اختبار جديد ↻</button>
+        </div>
+
+    </div>
+
+    <script>
+        // تفعيل أداة الإيميل (استبدل المفتاح أدناه بمفتاحك الخاص من موقع emailjs.com إذا رغبت)
+        (function(){
+            emailjs.init("tXeujcPD7Gsm6p8Yy"); // سيعمل الكود بشكل طبيعي، لتلقي الرسائل فعلياً على إيميلك انظر التعليمات بالأسفل.
+        })();
+
+        let userName = "";
+        let timerInterval;
+        let totalTimeSeconds = 10 * 60; // 10 دقائق تحول لثواني
+
+        const baseQuestions = [
+            { q: "ما هي الدالة المستخدمة للبحث عن قيمة في العمود الأول من جدول واسترجاع قيمة في نفس الصف من عمود آخر؟", options: ["HLOOKUP", "VLOOKUP", "LOOKUP", "MATCH"], correct: 1 },
+            { q: "أي من الرموز التالية يجب أن تبدأ به أي معادلة أو دالة في إكسيل؟", options: ["+", "@", "#", "="], correct: 3 },
+            { q: "لتثبيت الخلية (جعل المرجع مطلقاً) عند سحب المعادلة، نستخدم الرمز:", options: ["$", "%", "&", "*"], correct: 0 },
+            { q: "ما هي الدالة التي تقوم بجمع قيم الخلايا بناءً على شرط واحد محدد؟", options: ["SUM", "SUMIFS", "SUMIF", "TOTALIF"], correct: 2 },
+            { q: "أي أداة في إكسيل تسخدم لتلخيص وتحليل وتجميع البيانات الكبيرة بسرعة وسهولة؟", options: ["Pivot Table", "Data Validation", "Conditional Formatting", "Goal Seek"], correct: 0 },
+            { q: "الدالة المستخدمة لحساب عدد الخلايا التي تحتوي على أرقام فقط هي:", options: ["COUNTA", "COUNT", "COUNTBLANK", "COUNTIF"], correct: 1 },
+            { q: "ما هي النتيجة الصحيحة للمعادلة الناتجة عن دالة (IF(5>3, 'نعم', 'لا'؟", options: ["لا", "5", "3", "نعم"], correct: 3 },
+            { q: "ما هو الاختصار المستخدم لدمج وتوسيط الخلايا المحددة؟", options: ["لا يوجد اختصار مباشر", "Ctrl + M", "Alt + M", "Ctrl + Shift + C"], correct: 0 },
+            { q: "أي دالة تستخدم لتحويل النص من الحروف الصغيرة إلى الحروف الكبيرة بالكامل؟", options: ["LOWER", "UPPER", "PROPER", "TEXT"], correct: 1 },
+            { q: "لحذف المسافات الزائدة في بداية ونهاية النص داخل الخلية نستخدم دالة:", options: ["CLEAN", "REPLACE", "TRIM", "REMOVE"], correct: 2 },
+            { q: "عند ظهور الخطأ VALUE!# في إكسيل، فماذا يعني ذلك عادةً؟", options: ["العمود غير متسع لعرض البيانات", "المعادلة تحتوي على نوع بيانات خاطئ (نص بدلاً من رقم مثلاً)", "الدالة مستخدمة باسم خاطئ", "القسمة على صفر"], correct: 1 },
+            { q: "أي دالة تستخدم لاستخراج عدد معين من الحروف من الجانب الأيمن للنص؟", options: ["LEFT", "MID", "RIGHT", "TEXT"], correct: 2 },
+            { q: "تُستخدم أداة التنسيق الشرطي (Conditional Formatting) من أجل:", options: ["تغيير مظهر الخلايا بناءً على قيمتها", "قفل الخلايا لحمايتها", "ترتيب البيانات أبجدياً", "حذف الخلايا الفارغة"], correct: 0 },
+            { q: "دالة AND ترجع القيمة TRUE فقط إذا:", options: ["تحقق شرط واحد على الأقل", "لم يتحقق أي شرط", "تحققت جميع الشروط المذكورة معاً", "كانت كل القيم أرقاماً"], correct: 2 },
+            { q: "ما هي دالة إكسيل الحديثة التي جاءت لتكون بديلاً مرناً لدالتي VLOOKUP و HLOOKUP؟", options: ["XLOOKUP", "INDEX", "SEARCH", "FIND"], correct: 0 }
+        ];
+
+        let activeQuestions = [];
+
+        // خوارزمية ترتيب عشوائي للأسئلة
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // بدء الاختبار بعد التحقق من الاسم
+        function startQuiz() {
+            const input = document.getElementById('username-input').value.trim();
+            const loginError = document.getElementById('login-error');
+
+            // الفحص: يقبل الحروف العربية والإنجليزية والمسافات فقط، ويشترط وجود مقطعين على الأقل
+            const nameRegex = /^([a-zA-Z\u0600-\u06FF]+)\s+([a-zA-Z\u0600-\u06FF]+)$/;
+
+            if (!nameRegex.test(input)) {
+                loginError.innerText = "❌ خطأ: يرجى كتابة اسمك الثنائي فقط (مثال: محمد أحمد) بدون أرقام أو رموز أو ألقاب زائدة.";
+                loginError.style.display = 'block';
+                return;
+            }
+
+            userName = input;
+            loginError.style.display = 'none';
+            document.getElementById('login-area').style.display = 'none';
+            
+            // إظهار العداد والأسئلة
+            document.getElementById('timer-banner').style.display = 'flex';
+            document.getElementById('current-user-display').innerText = userName;
+            document.getElementById('quiz-area').style.display = 'block';
+
+            // لخبطة الأسئلة
+            activeQuestions = shuffleArray([...baseQuestions]);
+            renderQuestions();
+
+            // بدء العد التنازلي
+            startTimer();
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            
+            activeQuestions.forEach((item, qIndex) => {
+                let card = document.createElement('div');
+                card.className = 'question-card';
+                card.innerHTML = `
+                    <span class="question-number">سؤال ${qIndex + 1} من 15</span>
+                    <div class="question-text">${item.q}</div>
+                    <div class="options-container">
+                        ${item.options.map((opt, oIndex) => `
+                            <label class="option-label" id="label-${qIndex}-${oIndex}">
+                                <input type="radio" name="question-${qIndex}" value="${oIndex}" onchange="selectOption(${qIndex}, ${oIndex}, ${item.options.length})">
+                                ${opt}
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectOption(qIndex, oIndex, totalOptions) {
+            for(let i=0; i<totalOptions; i++) {
+                document.getElementById(`label-${qIndex}-${i}`).classList.remove('selected');
+            }
+            document.getElementById(`label-${qIndex}-${oIndex}`).classList.add('selected');
+        }
+
+        // تشغيل مؤقت الـ 10 دقائق
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                totalTimeSeconds--;
+                
+                let minutes = Math.floor(totalTimeSeconds / 60);
+                let seconds = totalTimeSeconds % 60;
+
+                document.getElementById('time-left').innerText = 
+                    `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                if (totalTimeSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    alert("⏰ انتهى الوقت المحدد للاختبار (10 دقائق)! سيتم حفظ إجاباتك وإرسال النتيجة تلقائياً.");
+                    calculateResult(true); // إنهاء إجباري بسبب انتهاء الوقت
+                }
+            }, 1000);
+        }
+
+        // حساب وإرسال النتيجة
+        function calculateResult(isTimeUp) {
+            const formError = document.getElementById('form-error');
+            
+            // إذا لم ينته الوقت، نتحقق أن كل الأسئلة تم حلها
+            if (!isTimeUp) {
+                let allAnswered = true;
+                for (let i = 0; i < activeQuestions.length; i++) {
+                    if (!document.querySelector(`input[name="question-${i}"]:checked`)) {
+                        allAnswered = false; break;
+                    }
+                }
+                if (!allAnswered) {
+                    formError.style.display = 'block';
+                    window.scrollTo({ top: formError.offsetTop - 20, behavior: 'smooth' });
+                    return;
+                }
+            }
+
+            clearInterval(timerInterval);
+            formError.style.display = 'none';
+
+            let correctCount = 0;
+            activeQuestions.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="question-${index}"]:checked`);
+                if (selected && parseInt(selected.value) === item.correct) {
+                    correctCount++;
+                }
+            });
+
+            let score = Math.round((correctCount / activeQuestions.length) * 100);
+
+            // إخفاء منطقة الأسئلة والعداد
+            document.getElementById('quiz-area').style.display = 'none';
+            document.getElementById('timer-banner').style.display = 'none';
+
+            // عرض كارت النتيجة
+            document.getElementById('final-name-display').innerText = userName;
+            const scoreDisplay = document.getElementById('score-display');
+            const feedback = document.getElementById('feedback-message');
+            
+            scoreDisplay.innerText = `${score} / 100`;
+
+            if (score >= 85) {
+                feedback.innerText = "🏆 ممتاز جداً! أنت محترف إكسيل حقيقي بجدارة وعقلية العطار الذكية.";
+                scoreDisplay.style.color = "#107c41";
+            } else if (score >= 65) {
+                feedback.innerText = "👍 جيد جداً! لديك مهارات قوية، وتحتاج فقط لبعض الممارسة المتقدمة.";
+                scoreDisplay.style.color = "#1084af";
+            } else {
+                feedback.innerText = "📚 مستوى مقبول، ننصحك بمراجعة أساسيات ودوال الإكسيل المتقدمة وتكرار التحدي.";
+                scoreDisplay.style.color = "#a80000";
+            }
+
+            document.getElementById('result-zone').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // إرسال الإيميل تلقائياً ببيانات الطالب والنتيجة
+            sendEmailReport(userName, score);
+        }
+
+        // دالة ربط الإيميل
+        function sendEmailReport(studentName, studentScore) {
+            // تجهيز البيانات المرسلة في الإيميل
+            let templateParams = {
+                to_name: "الأستاذ العطار", // اسمك أو لقبك
+                from_name: "منصة ExcelAttar",
+                student_name: studentName,
+                score: studentScore + " / 100",
+                test_date: new Date().toLocaleString('ar-EG')
+            };
+
+            /* ملاحظة للمطور: لتفعيل وصول الإيميلات الفعلي إلى صندوق بريدك:
+               1. سجل حساب مجاني في موقع https://www.emailjs.com
+               2. اربط بريدك الإلكتروني (Gmail مثلاً) لتحصل على Service ID.
+               3. أنشئ قالب إرسال (Email Template) يحتوي على المتغيرات المكتوبة أعلاه مثل {{student_name}} و {{score}}.
+               4. ضع المعرفات الخاصة بك في السطر البرمجي أدناه بدلاً من الكلمات التوضيحية:
+            */
+            emailjs.send('service_78eauxo', 'template_1zeliuf', templateParams)
+                .then(function(response) {
+                   console.log('SUCCESS!', response.status, response.text);
+                }, function(error) {
+                   console.log('FAILED...', error);
+                });
+        }
+    </script>
+</body>
+</html>
